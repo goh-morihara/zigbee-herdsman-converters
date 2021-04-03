@@ -5372,13 +5372,15 @@ const converters = {
         cluster: 'genLevelCtrl',
         type: ['commandMoveToLevelWithOnOff'],
         convert: (model, msg, publish, options, meta) => {
-            if (msg.data.transtime === 2) { // Indicates twisting the dimmer.
+            switch (msg.data.transtime) {
+            case 2: // Indicates twisting the dimmer.
                 return {action: 'brightness', brightness: msg.data.level};
-            } else {
-                // transtime === 7 somehow means a button click and no other values appears.
+            case 7: // Somehow means a button click.
                 // Would have msg.data.level with the value 0 and 255 in turns.
                 // Suppressing the value since no idea of the use.
                 return {action: 'click'};
+            default: // Doesn't happen: No other values appears.
+                return {};
             }
         },
     },
