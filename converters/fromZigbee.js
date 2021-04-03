@@ -5352,7 +5352,36 @@ const converters = {
             }
         },
     },
-
+    lutron_dimmer_twist2: {
+        cluster: 'genLevelCtrl',
+        type: ['read'],
+        convert: (model, msg, publish, options, meta) => null,
+        // Will be received spontainiously when dimmer twisted.
+        // Would have msg.data.currentLevel with no value.
+        // Since commandMoveToLevelWithOnOff will always come weather or not of this 'read', will ignore this safely.
+    },
+    lutron_dimmer_click: {
+        cluster: 'genOnOff',
+        type: ['read'],
+        convert: (model, msg, publish, options, meta) => null,
+        // Will be received when button clicked but not when consecutively in intervals shorter than a second.
+        // Would have msg.data.onOff with no value.
+        // Since commandMoveToLevelWithOnOff will always come regardless of the interval, will ignore this safely.
+    },
+    lutron_dimmer_twist: {
+        cluster: 'genLevelCtrl',
+        type: ['commandMoveToLevelWithOnOff'],
+        convert: (model, msg, publish, options, meta) => {
+            if (msg.data.transtime === 2) { // Indicates twisting the dimmer.
+                return {action: 'brightness', brightness: msg.data.level};
+            } else {
+                // transtime === 7 somehow means a button click and no other values appears.
+                // Would have msg.data.level with the value 0 and 255 in turns.
+                // Suppressing the value since no idea of the use.
+                return {action: 'click'};
+            }
+        },
+    },
     // #endregion
 
     // #region Ignore converters (these message dont need parsing).

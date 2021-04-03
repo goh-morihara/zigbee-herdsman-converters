@@ -13393,13 +13393,13 @@ const devices = [
         model: 'Z3-1BRL',
         vendor: 'Lutron',
         description: 'Aurora smart bulb dimmer',
-        fromZigbee: [fz.legacy.dimmer_passthru_brightness],
+        fromZigbee: [fz.lutron_dimmer_twist, fz.lutron_dimmer_click, fz.lutron_dimmer_twist2],
         toZigbee: [],
-        exposes: [e.action(['brightness']), exposes.numeric('brightness', ea.STATE)],
+        exposes: [e.action(['brightness', 'click']), exposes.numeric('brightness', ea.STATE)],
         meta: {configureKey: 1},
         configure: async (device, coordinatorEndpoint, logger) => {
             const endpoint = device.getEndpoint(1);
-            await reporting.bind(endpoint, coordinatorEndpoint, ['genLevelCtrl']);
+            await reporting.bind(endpoint, coordinatorEndpoint, ['genLevelCtrl', 'genOnOff']);
         },
         ota: ota.zigbeeOTA,
     },
